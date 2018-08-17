@@ -78,8 +78,7 @@ class TradeOfferManager extends EventEmitter {
             return;
         }
 
-        const sent = this.pollData.offers.filter(offer => offer.sent_by_you);
-        const received = this.pollData.offers.filter(offer => !offer.sent_by_you);
+        const {sent, received} = this.pollData.offers.reduce((acc, offer) => acc[offer.sent_by_you ? 'sent' : 'received'].push(offer) && acc, {sent: [], received: []});
 
         sent.forEach(async (offer) => {
             const oldOffer = oldPollData.offers.find(_oldOffer => _oldOffer.id === offer.id);
