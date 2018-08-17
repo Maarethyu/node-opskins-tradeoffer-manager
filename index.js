@@ -109,8 +109,16 @@ class TradeOfferManager extends EventEmitter {
             }
         });
 
+        // If there is too much offers in pollData, try to remove offers that aren't Active until we reach a reasonable amount
         if (this.pollData.offers.length > this.pollDataMaxOffers) {
-            this.pollData.offers = this.pollData.offers.slice(0, this.pollDataMaxOffers);
+            let toRemove = this.pollData.offers.length - this.pollDataMaxOffers;
+
+            for (let i = this.pollData.offers.length - 1; i >= 0 && toRemove > 0; i--) {
+                if (this.pollData.offers[i].state !== ETradeOfferState.Active) {
+                    this.pollData.offers.splice(i, 1);
+                    toRemove--;
+                }
+            }
         }
 
         let latest = offersSince;
